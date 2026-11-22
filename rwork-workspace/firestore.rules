@@ -1,0 +1,46 @@
+rules_version = '2';
+// Rwork security rules. Paste this whole file into Firebase console → Firestore Database → Rules → Publish.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ▼▼▼ OWNER EMAIL(S): replace rworkrahult@gmail.com with your own email, in lowercase.
+    //     Use the same email(s) as ownerEmails in js/config.js. Separate several with commas.
+    function ownerEmails() { return ['rworkrahult@gmail.com']; }
+    // ▲▲▲
+
+    function signedIn() {
+      return request.auth != null && request.auth.token.email != null && request.auth.token.email_verified == true;
+    }
+    function email() { return request.auth.token.email.lower(); }
+    function isOwner() { return signedIn() && email() in ownerEmails(); }
+    function staffPath() { return /databases/$(database)/documents/staff/$(email()); }
+    function isStaff() { return isOwner() || (signedIn() && exists(staffPath()) && get(staffPath()).data.active == true); }
+    function isAdmin() { return isOwner() || (isStaff() && get(staffPath()).data.admin == true); }
+
+    // Collections only admins (HR / Operations / Management) can change. Everyone on the team can read them.
+    function adminWrite() {
+      return ['org', 'employees', 'projects', 'approvals', 'clients', 'campaigns', 'websites', 'channels', 'announcements'];
+    }
+    // Collections only admins can read or change (money).
+    function adminOnly() { return ['invoices', 'billing']; }
+
+    // Sign-in allow-list: one document per email, written by admins from the People page.
+    match /staff/{em} {
+      allow read: if isStaff() || (signedIn() && email() == em);
+      allow write: if isAdmin();
+    }
+
+    // Each person's private data.
+    match /data/users/{uid}/{rest=**} {
+      allow read, write: if isStaff() && email() == uid;
+    }
+
+    // Everything else: tasks, leaves, posts, chat, timelogs, adstats, webchecks and the admin collections above.
+    match /{coll}/{rest=**} {
+      allow read: if coll != 'staff' && coll != 'data'
+        && (isAdmin() || (isStaff() && !(coll in adminOnly())));
+      allow write: if coll != 'staff' && coll != 'data'
+        && (isAdmin() || (isStaff() && !(coll in adminOnly()) && !(coll in adminWrite())));
+    }
+  }
+}

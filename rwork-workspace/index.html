@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rwork Workspace</title>
+<link rel="icon" type="image/png" href="img/logo.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="side" id="side">
+    <a class="brand" id="brand" href="#dashboard"><img id="logoMark" src="img/logo.png" alt="Rwork logo"><span class="wm"><b>Rwork</b><span id="brandSub">Workspace</span></span></a>
+    <nav class="nav" id="nav" aria-label="Main"></nav>
+    <div class="side-foot" id="sideFoot">Connecting…</div>
+    <button class="btn ghost signout" id="signOutBtn" type="button" hidden>Sign out</button>
+  </aside>
+  <div class="wrap">
+    <header class="top">
+      <button class="btn ghost menu-btn" id="menuBtn" aria-label="Open menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <div class="ttl"><span class="eyebrow" id="eyebrow">Rwork Workspace</span><h1 id="pageTitle">Dashboard</h1></div>
+      <div class="top-actions" id="topActions"></div>
+      <div class="userchip" id="userChip" hidden></div>
+    </header>
+    <div id="banner" role="status"></div>
+    <main id="main" tabindex="-1"><div class="center-msg"><p class="muted">Loading your workspace…</p></div></main>
+  </div>
+</div>
+<div id="modalRoot"></div>
+<div id="toasts" aria-live="polite"></div>
+<!-- Load order: settings + sign-in (Firebase), core, then modules (each calls RW.register), then boot. -->
+<script src="js/config.js"></script>
+<script src="js/firebase-shim.js"></script>
+<script src="js/core.js"></script>
+<script src="js/m-dashboard.js"></script>
+<script src="js/m-projects.js"></script>
+<script src="js/m-clients.js"></script>
+<script src="js/m-leave.js"></script>
+<script src="js/m-people.js"></script>
+<script src="js/m-settings.js"></script>
+<script src="js/m-chat.js"></script>
+<script src="js/m-content.js"></script>
+<script src="js/m-ads-web.js"></script>
+<script src="js/m-time.js"></script>
+<script src="js/boot.js"></script>
+</body>
+</html>
